@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Upload Expense</title></head>
+<body>
+    <h2>Submit Your Expense</h2>
+    <form method="post" enctype="multipart/form-data">
+        <label>Name:</label><input type="text" name="name" required><br>
+        <label>Account Number:</label><input type="text" name="account_no" required><br>
+        <label>IFSC Code:</label><input type="text" name="ifsc" required><br>
+        <label>Details:</label><textarea name="details" required></textarea><br>
+        <label>Expense File:</label><input type="file" name="expense_file" required><br>
+        <label>Passbook Copy:</label><input type="file" name="passbook_file" required><br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

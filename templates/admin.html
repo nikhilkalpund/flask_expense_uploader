@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Panel</title></head>
+<body>
+    <h2>Expense Submissions</h2>
+    <table border="1">
+        <tr><th>Name</th><th>Account No</th><th>IFSC</th><th>Details</th><th>Expense</th><th>Passbook</th></tr>
+        {% for sub in submissions %}
+        <tr>
+            <td>{{ sub.name }}</td>
+            <td>{{ sub.account_no }}</td>
+            <td>{{ sub.ifsc }}</td>
+            <td>{{ sub.details }}</td>
+            <td><a href="{{ url_for('static', filename=sub.expense_path.split('/')[-1]) }}" target="_blank">View</a></td>
+            <td><a href="{{ url_for('static', filename=sub.passbook_path.split('/')[-1]) }}" target="_blank">View</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
