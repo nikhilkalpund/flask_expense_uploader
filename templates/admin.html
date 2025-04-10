@@ -1,50 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Panel - Submitted Expenses</title>
+    <title>Admin Panel</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        h2 { margin-bottom: 20px; }
-        .submission { border: 1px solid #ccc; padding: 15px; margin-bottom: 30px; border-radius: 5px; }
-        .file-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .file-table th, .file-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        body { font-family: Arial; padding: 20px; }
+        .logout { float: right; }
+        .submission { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; }
+        .file-table { width: 100%; border-collapse: collapse; }
+        .file-table th, .file-table td { border: 1px solid #ccc; padding: 8px; }
         .file-table th { background-color: #f0f0f0; }
-        .actions a { margin-right: 10px; }
     </style>
 </head>
 <body>
-    <h2>Submitted Expenses (Admin Panel)</h2>
+    <a class="logout" href="{{ url_for('logout') }}">Logout</a>
+    <h2>Expense Submissions</h2>
 
-    {% for submission in submissions %}
-        <div class="submission">
-            <p><strong>Name:</strong> {{ submission.name }}</p>
-            <p><strong>Total Amount:</strong> ₹{{ submission.amount }}</p>
-            <p><strong>Account No:</strong> {{ submission.account_no }}</p>
-            <p><strong>IFSC Code:</strong> {{ submission.ifsc }}</p>
-            <p><strong>Details:</strong> {{ submission.details }}</p>
+    {% for sub in submissions %}
+    <div class="submission">
+        <p><strong>Name:</strong> {{ sub.name }}</p>
+        <p><strong>Total Amount:</strong> ₹{{ sub.amount }}</p>
+        <p><strong>Account No:</strong> {{ sub.account_no }}</p>
+        <p><strong>IFSC Code:</strong> {{ sub.ifsc }}</p>
+        <p><strong>Details:</strong> {{ sub.details }}</p>
 
-            <h4>Uploaded Files:</h4>
-            <table class="file-table">
-                <tr>
-                    <th>Filename</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-                {% for file in submission.files %}
-                <tr>
-                    <td>{{ file.filename }}</td>
-                    <td>{{ file.description }}</td>
-                    <td class="actions">
-                        <a href="{{ url_for('preview_file', filename=file.filename) }}" target="_blank">Preview</a>
-                        <a href="{{ url_for('download_file', filename=file.filename) }}">Download</a>
-                        <a href="{{ url_for('delete_file', filename=file.filename) }}">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
+        <h4>Expense Files</h4>
+        <table class="file-table">
+            <tr><th>File</th><th>Description</th><th>Actions</th></tr>
+            {% for file in sub.files %}
+            <tr>
+                <td>{{ file.filename }}</td>
+                <td>{{ file.description }}</td>
+                <td>
+                    <a href="{{ url_for('preview_file', filename=file.filename) }}" target="_blank">Preview</a> |
+                    <a href="{{ url_for('download_file', filename=file.filename) }}">Download</a> |
+                    <a href="{{ url_for('delete_file', filename=file.filename) }}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        {% if sub.passbook_path %}
+        <h4>Passbook File</h4>
+        <p>
+            <a href="{{ url_for('preview_file', filename=sub.passbook_path) }}" target="_blank">Preview</a> |
+            <a href="{{ url_for('download_file', filename=sub.passbook_path) }}">Download</a> |
+            <a href="{{ url_for('delete_file', filename=sub.passbook_path) }}">Delete</a>
+        </p>
+        {% endif %}
+    </div>
     {% else %}
-        <p>No submissions found.</p>
+    <p>No submissions found.</p>
     {% endfor %}
 </body>
 </html>
