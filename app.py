@@ -17,8 +17,8 @@ submissions = []
 def send_email_notification(name, account_no, ifsc, details, amount):
     msg = EmailMessage()
     msg['Subject'] = f'New Expense Submission from {name}'
-    msg['From'] = 'your_email@gmail.com'  # Replace with your sender email
-    recipients = ['admin1@example.com', 'admin2@example.com']
+    msg['From'] = 'nikhilkalpund@gmail.com'  # Replace with your sender email
+    recipients = ['kalpundajeet@gmail.com', 'nikhilkalpund@gmail.com']
     msg['To'] = ', '.join(recipients)
 
     msg.set_content(f'''
@@ -36,7 +36,7 @@ View the expense in the admin panel:
 
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login('your_email@gmail.com', 'your_app_password')  # Use app password
+            smtp.login('nikhilkalpund@gmail.com', 'pauz qyek jecb iauy')  # Use app password
             smtp.send_message(msg)
     except Exception as e:
         print("Email failed:", e)
