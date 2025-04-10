@@ -1,35 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Submit Expense</title>
+    <title>Expense Submission</title>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
-        input, textarea { width: 100%; padding: 8px; margin-bottom: 10px; }
-        label { font-weight: bold; }
-        .file-group { margin-bottom: 10px; }
-        .add-btn { margin-bottom: 15px; cursor: pointer; color: blue; text-decoration: underline; }
+        label { display: block; margin-top: 10px; }
+        input, textarea { width: 100%; padding: 8px; margin-top: 5px; }
+        .file-group { margin-bottom: 15px; }
+        button { margin-top: 20px; padding: 10px 20px; }
     </style>
     <script>
         function addFileInput() {
             const container = document.getElementById('files-container');
-            const div = document.createElement('div');
-            div.classList.add('file-group');
-            div.innerHTML = `
-                <input type="file" name="expense_files[]" required>
-                <input type="text" name="file_descriptions[]" placeholder="Description" required>
+            const index = container.children.length;
+            const group = document.createElement('div');
+            group.className = 'file-group';
+            group.innerHTML = `
+                <label>Expense File:</label>
+                <input type="file" name="expense_files" required>
+                <label>Description:</label>
+                <input type="text" name="descriptions" placeholder="File description..." required>
             `;
-            container.appendChild(div);
+            container.appendChild(group);
         }
     </script>
 </head>
 <body>
-    <h2>Submit Your Expense</h2>
+    <h2>Upload Expense Submission</h2>
     <form method="POST" enctype="multipart/form-data">
         <label>Name:</label>
         <input type="text" name="name" required>
 
         <label>Total Amount:</label>
-        <input type="number" name="amount" required>
+        <input type="number" name="amount" step="0.01" required>
 
         <label>Account Number:</label>
         <input type="text" name="account_no" required>
@@ -38,16 +41,19 @@
         <input type="text" name="ifsc" required>
 
         <label>Details:</label>
-        <textarea name="details" required></textarea>
+        <textarea name="details" rows="3"></textarea>
 
-        <label>Upload Files:</label>
-        <div id="files-container">
-            <div class="file-group">
-                <input type="file" name="expense_files[]" required>
-                <input type="text" name="file_descriptions[]" placeholder="Description" required>
+        <label>Expense Files:</label>
+        <div id="files-container" class="file-group">
+            <div>
+                <input type="file" name="expense_files" required>
+                <input type="text" name="descriptions" placeholder="File description..." required>
             </div>
         </div>
-        <span class="add-btn" onclick="addFileInput()">+ Add Another File</span>
+        <button type="button" onclick="addFileInput()">+ Add Another File</button>
+
+        <label>Passbook File:</label>
+        <input type="file" name="passbook_file" required>
 
         <button type="submit">Submit</button>
     </form>
