@@ -1,16 +1,41 @@
 <!DOCTYPE html>
 <html>
-<head><title>Upload Expense</title></head>
+<head>
+    <title>Submit Expense</title>
+</head>
 <body>
-    <h2>Submit Your Expense</h2>
-    <form method="post" enctype="multipart/form-data">
-        <label>Name:</label><input type="text" name="name" required><br>
-        <label>Account Number:</label><input type="text" name="account_no" required><br>
-        <label>IFSC Code:</label><input type="text" name="ifsc" required><br>
-        <label>Details:</label><textarea name="details" required></textarea><br>
-        <label>Expense File:</label><input type="file" name="expense_file" required><br>
-        <label>Passbook Copy:</label><input type="file" name="passbook_file" required><br><br>
-        <input type="submit" value="Submit">
+    <h2>Submit Expense Details</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul style="color:red;">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form action="/" method="post" enctype="multipart/form-data">
+        <label>Name:</label><br>
+        <input type="text" name="name"><br><br>
+
+        <label>Account Number: *</label><br>
+        <input type="text" name="account_no" required><br><br>
+
+        <label>IFSC Code: *</label><br>
+        <input type="text" name="ifsc" required><br><br>
+
+        <label>Details:</label><br>
+        <textarea name="details"></textarea><br><br>
+
+        <label>Upload Expense File: *</label><br>
+        <input type="file" name="expense_file" accept="application/pdf,image/*" required><br><br>
+
+        <label>Upload Passbook File: *</label><br>
+        <input type="file" name="passbook_file" accept="application/pdf,image/*" required><br><br>
+
+        <button type="submit">Submit</button>
     </form>
 </body>
 </html>

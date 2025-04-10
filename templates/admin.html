@@ -1,57 +1,14 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Admin Panel</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logout-btn {
-            padding: 8px 12px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        th,
-        td {
-            border: 1px solid #888;
-            padding: 10px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .actions a {
-            margin: 0 5px;
-            text-decoration: none;
-            color: blue;
-        }
-
-        .delete-btn {
-            color: red;
-            cursor: pointer;
-        }
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #888; padding: 10px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        .actions a, .actions span { margin: 0 5px; text-decoration: none; cursor: pointer; }
+        .delete-btn { color: red; }
     </style>
     <script>
         function confirmDelete(filename) {
@@ -61,14 +18,19 @@
         }
     </script>
 </head>
-
 <body>
-    <div class="top-bar">
-        <h2>Expense Submissions</h2>
-        <form action="{{ url_for('logout') }}" method="get">
-            <button class="logout-btn">Logout</button>
-        </form>
-    </div>
+    <h2>Admin Panel - Expense Submissions</h2>
+    <p><a href="/logout">Logout</a></p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul style="color:green;">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 
     {% if submissions %}
     <table>
@@ -88,12 +50,12 @@
             <td>{{ sub.ifsc }}</td>
             <td>{{ sub.details }}</td>
             <td>
-                <a href="{{ url_for('preview_file', filename=sub.expense_path) }}" target="_blank">Preview</a> |
-                <a href="{{ url_for('download_file', filename=sub.expense_path) }}">Download</a>
+                <a href="/preview/{{ sub.expense_path }}" target="_blank">Preview</a> |
+                <a href="/download/{{ sub.expense_path }}">Download</a>
             </td>
             <td>
-                <a href="{{ url_for('preview_file', filename=sub.passbook_path) }}" target="_blank">Preview</a> |
-                <a href="{{ url_for('download_file', filename=sub.passbook_path) }}">Download</a>
+                <a href="/preview/{{ sub.passbook_path }}" target="_blank">Preview</a> |
+                <a href="/download/{{ sub.passbook_path }}">Download</a>
             </td>
             <td class="actions">
                 <span class="delete-btn" onclick="confirmDelete('{{ sub.expense_path }}')">Delete</span>
@@ -105,5 +67,4 @@
     <p>No submissions yet.</p>
     {% endif %}
 </body>
-
 </html>
