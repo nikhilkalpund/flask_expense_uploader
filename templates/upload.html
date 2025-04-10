@@ -2,38 +2,52 @@
 <html>
 <head>
     <title>Submit Expense</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        input, textarea { width: 100%; padding: 8px; margin-bottom: 10px; }
+        label { font-weight: bold; }
+        .file-group { margin-bottom: 10px; }
+        .add-btn { margin-bottom: 15px; cursor: pointer; color: blue; text-decoration: underline; }
+    </style>
+    <script>
+        function addFileInput() {
+            const container = document.getElementById('files-container');
+            const div = document.createElement('div');
+            div.classList.add('file-group');
+            div.innerHTML = `
+                <input type="file" name="expense_files[]" required>
+                <input type="text" name="file_descriptions[]" placeholder="Description" required>
+            `;
+            container.appendChild(div);
+        }
+    </script>
 </head>
 <body>
-    <h2>Submit Expense Details</h2>
+    <h2>Submit Your Expense</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <label>Name:</label>
+        <input type="text" name="name" required>
 
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul style="color:red;">
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+        <label>Total Amount:</label>
+        <input type="number" name="amount" required>
 
-    <form action="/" method="post" enctype="multipart/form-data">
-        <label>Name:</label><br>
-        <input type="text" name="name"><br><br>
+        <label>Account Number:</label>
+        <input type="text" name="account_no" required>
 
-        <label>Account Number: *</label><br>
-        <input type="text" name="account_no" required><br><br>
+        <label>IFSC Code:</label>
+        <input type="text" name="ifsc" required>
 
-        <label>IFSC Code: *</label><br>
-        <input type="text" name="ifsc" required><br><br>
+        <label>Details:</label>
+        <textarea name="details" required></textarea>
 
-        <label>Details:</label><br>
-        <textarea name="details"></textarea><br><br>
-
-        <label>Upload Expense File: *</label><br>
-        <input type="file" name="expense_file" accept="application/pdf,image/*" required><br><br>
-
-        <label>Upload Passbook File: *</label><br>
-        <input type="file" name="passbook_file" accept="application/pdf,image/*" required><br><br>
+        <label>Upload Files:</label>
+        <div id="files-container">
+            <div class="file-group">
+                <input type="file" name="expense_files[]" required>
+                <input type="text" name="file_descriptions[]" placeholder="Description" required>
+            </div>
+        </div>
+        <span class="add-btn" onclick="addFileInput()">+ Add Another File</span>
 
         <button type="submit">Submit</button>
     </form>

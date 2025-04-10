@@ -11,19 +11,14 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD = 'password123'
-ADMIN_PANEL_URL = 'https://flask-expense-uploader.onrender.com/admin'
-
+ADMIN_PANEL_URL = "https://flask-expense-uploader.onrender.com/admin"
 submissions = []
 
-
-def send_email_notification(name, account_no, ifsc, details):
+def send_email_notification(name, account_no, ifsc, details, amount):
     msg = EmailMessage()
     msg['Subject'] = f'New Expense Submission from {name}'
-    msg['From'] = 'nikhilkalpund@gmail.com'
-
-    recipients = ['kalpundajeet@gmail.com', 'nikhilkalpund@gmail.com']
+    msg['From'] = 'your_email@gmail.com'  # Replace with your sender email
+    recipients = ['admin1@example.com', 'admin2@example.com']
     msg['To'] = ', '.join(recipients)
 
     msg.set_content(f'''
@@ -32,96 +27,70 @@ A new expense has been submitted:
 Name: {name}
 Account Number: {account_no}
 IFSC Code: {ifsc}
+Total Amount: {amount}
 Details: {details}
 
-You can view it in the admin panel here:
+View the expense in the admin panel:
 {ADMIN_PANEL_URL}
 ''')
 
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login('nikhilkalpund@gmail.com', 'pauz qyek jecb iauy')
+            smtp.login('your_email@gmail.com', 'your_app_password')  # Use app password
             smtp.send_message(msg)
-            print("Email sent successfully.")
     except Exception as e:
         print("Email failed:", e)
-
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_form():
     if request.method == 'POST':
-        expense_file = request.files.get('expense_file')
-        passbook_file = request.files.get('passbook_file')
-        name = request.form.get('name')
-        account_no = request.form.get('account_no')
-        ifsc = request.form.get('ifsc')
-        details = request.form.get('details')
+        name = request.form['name']
+        amount = request.form['amount']
+        account_no = request.form['account_no']
+        ifsc = request.form['ifsc']
+        details = request.form['details']
 
-        if not (expense_file and passbook_file and account_no and ifsc):
-            flash("All fields are required, including both file uploads.")
-            return redirect(request.url)
+        uploaded_files = request.files.getlist('expense_files[]')
+        descriptions = request.form.getlist('file_descriptions[]')
 
-        exp_filename = secure_filename(expense_file.filename)
-        pass_filename = secure_filename(passbook_file.filename)
-
-        exp_path = os.path.join(app.config['UPLOAD_FOLDER'], exp_filename)
-        pass_path = os.path.join(app.config['UPLOAD_FOLDER'], pass_filename)
-
-        expense_file.save(exp_path)
-        passbook_file.save(pass_path)
+        files_data = []
+        for file, desc in zip(uploaded_files, descriptions):
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(filepath)
+                files_data.append({'filename': filename, 'description': desc})
 
         submission = {
             'name': name,
+            'amount': amount,
             'account_no': account_no,
             'ifsc': ifsc,
             'details': details,
-            'expense_path': exp_filename,
-            'passbook_path': pass_filename
+            'files': files_data
         }
-
         submissions.append(submission)
-        send_email_notification(name, account_no, ifsc, details)
 
-        return render_template('confirmation.html')
+        send_email_notification(name, account_no, ifsc, details, amount)
+
+        return render_template('confirmation.html', name=name)
 
     return render_template('upload.html')
 
-
-@app.route('/admin', methods=['GET', 'POST'])
-def admin_login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-            session['logged_in'] = True
-            return redirect(url_for('admin_view'))
-        else:
-            flash('Invalid credentials')
-    return render_template('admin_login.html')
-
-
-@app.route('/admin-panel')
+@app.route('/admin')
 def admin_view():
-    if not session.get('logged_in'):
-        return redirect(url_for('admin_login'))
     return render_template('admin.html', submissions=submissions)
-
 
 @app.route('/preview/<filename>')
 def preview_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-
 @app.route('/download/<filename>')
 def download_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
-
 @app.route('/delete/<filename>')
 def delete_file(filename):
-    if not session.get('logged_in'):
-        return redirect(url_for('admin_login'))
-
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     try:
         os.remove(file_path)
@@ -132,18 +101,10 @@ def delete_file(filename):
     global submissions
     submissions = [
         sub for sub in submissions
-        if sub['expense_path'] != filename and sub['passbook_path'] != filename
+        if all(f['filename'] != filename for f in sub.get('files', []))
     ]
 
     return redirect(url_for('admin_view'))
 
-
-@app.route('/logout')
-def logout():
-    session.pop('logged_in', None)
-    flash('Logged out successfully.')
-    return redirect(url_for('admin_login'))
-
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -1,70 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Panel</title>
+    <title>Admin Panel - Submitted Expenses</title>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #888; padding: 10px; text-align: center; }
-        th { background-color: #f2f2f2; }
-        .actions a, .actions span { margin: 0 5px; text-decoration: none; cursor: pointer; }
-        .delete-btn { color: red; }
+        h2 { margin-bottom: 20px; }
+        .submission { border: 1px solid #ccc; padding: 15px; margin-bottom: 30px; border-radius: 5px; }
+        .file-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .file-table th, .file-table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        .file-table th { background-color: #f0f0f0; }
+        .actions a { margin-right: 10px; }
     </style>
-    <script>
-        function confirmDelete(filename) {
-            if (confirm("Are you sure you want to delete this submission?")) {
-                window.location.href = "/delete/" + filename;
-            }
-        }
-    </script>
 </head>
 <body>
-    <h2>Admin Panel - Expense Submissions</h2>
-    <p><a href="/logout">Logout</a></p>
+    <h2>Submitted Expenses (Admin Panel)</h2>
 
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul style="color:green;">
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+    {% for submission in submissions %}
+        <div class="submission">
+            <p><strong>Name:</strong> {{ submission.name }}</p>
+            <p><strong>Total Amount:</strong> ₹{{ submission.amount }}</p>
+            <p><strong>Account No:</strong> {{ submission.account_no }}</p>
+            <p><strong>IFSC Code:</strong> {{ submission.ifsc }}</p>
+            <p><strong>Details:</strong> {{ submission.details }}</p>
 
-    {% if submissions %}
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Account No</th>
-            <th>IFSC</th>
-            <th>Details</th>
-            <th>Expense</th>
-            <th>Passbook</th>
-            <th>Actions</th>
-        </tr>
-        {% for sub in submissions %}
-        <tr>
-            <td>{{ sub.name }}</td>
-            <td>{{ sub.account_no }}</td>
-            <td>{{ sub.ifsc }}</td>
-            <td>{{ sub.details }}</td>
-            <td>
-                <a href="/preview/{{ sub.expense_path }}" target="_blank">Preview</a> |
-                <a href="/download/{{ sub.expense_path }}">Download</a>
-            </td>
-            <td>
-                <a href="/preview/{{ sub.passbook_path }}" target="_blank">Preview</a> |
-                <a href="/download/{{ sub.passbook_path }}">Download</a>
-            </td>
-            <td class="actions">
-                <span class="delete-btn" onclick="confirmDelete('{{ sub.expense_path }}')">Delete</span>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+            <h4>Uploaded Files:</h4>
+            <table class="file-table">
+                <tr>
+                    <th>Filename</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+                {% for file in submission.files %}
+                <tr>
+                    <td>{{ file.filename }}</td>
+                    <td>{{ file.description }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('preview_file', filename=file.filename) }}" target="_blank">Preview</a>
+                        <a href="{{ url_for('download_file', filename=file.filename) }}">Download</a>
+                        <a href="{{ url_for('delete_file', filename=file.filename) }}">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
     {% else %}
-    <p>No submissions yet.</p>
-    {% endif %}
+        <p>No submissions found.</p>
+    {% endfor %}
 </body>
 </html>
