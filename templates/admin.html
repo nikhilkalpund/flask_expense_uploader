@@ -1,20 +1,92 @@
 <!DOCTYPE html>
 <html>
-<head><title>Admin Panel</title></head>
+
+<head>
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #888;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .actions a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: blue;
+        }
+
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function confirmDelete(filename) {
+            if (confirm("Are you sure you want to delete this submission?")) {
+                window.location.href = "/delete/" + filename;
+            }
+        }
+    </script>
+</head>
+
 <body>
     <h2>Expense Submissions</h2>
-    <table border="1">
-        <tr><th>Name</th><th>Account No</th><th>IFSC</th><th>Details</th><th>Expense</th><th>Passbook</th></tr>
+
+    {% if submissions %}
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Account No</th>
+            <th>IFSC</th>
+            <th>Details</th>
+            <th>Expense</th>
+            <th>Passbook</th>
+            <th>Actions</th>
+        </tr>
         {% for sub in submissions %}
         <tr>
             <td>{{ sub.name }}</td>
             <td>{{ sub.account_no }}</td>
             <td>{{ sub.ifsc }}</td>
             <td>{{ sub.details }}</td>
-            <td><a href="{{ url_for('static', filename=sub.expense_path.split('/')[-1]) }}" target="_blank">View</a></td>
-            <td><a href="{{ url_for('static', filename=sub.passbook_path.split('/')[-1]) }}" target="_blank">View</a></td>
+            <td>
+                <a href="{{ url_for('static', filename='uploads/' + sub.expense_path.split('/')[-1]) }}"
+                    target="_blank">Preview</a> |
+                <a href="{{ url_for('static', filename='uploads/' + sub.expense_path.split('/')[-1]) }}"
+                    download>Download</a>
+            </td>
+            <td>
+                <a href="{{ url_for('static', filename='uploads/' + sub.passbook_path.split('/')[-1]) }}"
+                    target="_blank">Preview</a> |
+                <a href="{{ url_for('static', filename='uploads/' + sub.passbook_path.split('/')[-1]) }}"
+                    download>Download</a>
+            </td>
+            <td class="actions">
+                <span class="delete-btn" onclick="confirmDelete('{{ sub.expense_path.split('/')[-1] }}')">Delete</span>
+            </td>
         </tr>
         {% endfor %}
     </table>
+    {% else %}
+    <p>No submissions yet.</p>
+    {% endif %}
 </body>
+
 </html>
