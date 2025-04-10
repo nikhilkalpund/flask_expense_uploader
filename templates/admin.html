@@ -67,19 +67,15 @@
             <td>{{ sub.ifsc }}</td>
             <td>{{ sub.details }}</td>
             <td>
-                <a href="{{ url_for('static', filename='uploads/' + sub.expense_path.split('/')[-1]) }}"
-                    target="_blank">Preview</a> |
-                <a href="{{ url_for('static', filename='uploads/' + sub.expense_path.split('/')[-1]) }}"
-                    download>Download</a>
+                <a href="{{ url_for('preview_file', filename=sub.expense_path) }}" target="_blank">Preview</a> |
+                <a href="{{ url_for('download_file', filename=sub.expense_path) }}" download>Download</a>
             </td>
             <td>
-                <a href="{{ url_for('static', filename='uploads/' + sub.passbook_path.split('/')[-1]) }}"
-                    target="_blank">Preview</a> |
-                <a href="{{ url_for('static', filename='uploads/' + sub.passbook_path.split('/')[-1]) }}"
-                    download>Download</a>
+                <a href="{{ url_for('preview_file', filename=sub.passbook_path) }}" target="_blank">Preview</a> |
+                <a href="{{ url_for('download_file', filename=sub.passbook_path) }}" download>Download</a>
             </td>
             <td class="actions">
-                <span class="delete-btn" onclick="confirmDelete('{{ sub.expense_path.split('/')[-1] }}')">Delete</span>
+                <span class="delete-btn" onclick="confirmDelete('{{ sub.expense_path }}')">Delete</span>
             </td>
         </tr>
         {% endfor %}

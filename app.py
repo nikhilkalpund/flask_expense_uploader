@@ -114,7 +114,7 @@ def delete_file(filename):
         if sub['expense_path'] != filename and sub['passbook_path'] != filename
     ]
 
-    return redirect(url_for('admin_view'))
+    return render_template('confirmation.html')
 
 
 if __name__ == '__main__':
